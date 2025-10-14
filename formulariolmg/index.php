@@ -1,9 +1,7 @@
 <?php
-// index.php — versión simple que cumple: PNG solo, <=10KB,
-// si no hay imagen: calavera + mensaje bajo la imagen.
 
 const UP_DIR   = __DIR__ . '/uploads/';
-const MAX_SIZE = 10 * 1024;     // 10 KB
+const MAX_SIZE = 10 * 1024;     
 const MIME_OK  = 'image/png';
 
 if (!is_dir(UP_DIR)) { @mkdir(UP_DIR, 0775, true); }
@@ -16,16 +14,15 @@ $edad   = (int)($_POST['edad'] ?? 0);
 $armas  = isset($_POST['armas']) && is_array($_POST['armas']) ? $_POST['armas'] : [];
 $magia  = $_POST['magia']  ?? 'No';
 
-// Por defecto: calavera + SIN o CON mensaje según el caso
 $imgPath   = 'calavera.png';
 $errImagen = '';
 
-// Lógica de imagen (simple y clara)
+
 if (isset($_FILES['imagen'])) {
   $f = $_FILES['imagen'];
 
   if ($f['error'] === UPLOAD_ERR_NO_FILE) {
-    // No se seleccionó archivo
+  
     $imgPath   = 'calavera.png';
     $errImagen = 'No se subió ninguna imagen.';
   } elseif ($f['error'] !== UPLOAD_ERR_OK) {
@@ -35,14 +32,14 @@ if (isset($_FILES['imagen'])) {
     $imgPath   = 'calavera.png';
     $errImagen = 'La imagen supera el tamaño máximo (10 KB).';
   } else {
-    // Verificación de tipo real (MIME)
+    
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     $mime  = $finfo->file($f['tmp_name']);
     if ($mime !== MIME_OK) {
       $imgPath   = 'calavera.png';
       $errImagen = 'Tipo de archivo no permitido. Solo PNG.';
     } else {
-      // Guardar con nombre único
+      
       $newName = bin2hex(random_bytes(6)) . '.png';
       if (move_uploaded_file($f['tmp_name'], UP_DIR . $newName)) {
         $imgPath   = 'uploads/' . $newName;
